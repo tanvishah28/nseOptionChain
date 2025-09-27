@@ -9,17 +9,21 @@ app.get("/option-chain", async (req, res) => {
   let browser = null;
 
   try {
+    // Log the executable path for debugging
+    const executablePath = await chromium.executablePath || "/usr/bin/chromium-browser";
+    console.log("Chromium path:", executablePath);
+
     browser = await chromium.puppeteer.launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath || null,
-      headless: chromium.headless,
+      executablePath,
+      headless: true,
     });
 
     const page = await browser.newPage();
 
     // Spoof user-agent to bypass NSE bot detection
     await page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
     );
 
     await page.goto(`https://www.nseindia.com/option-chain?symbol=${symbol}`, {
